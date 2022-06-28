@@ -44,9 +44,9 @@ GROUP BY  LANGUAGE;
  limit 1;
  
  ---Which month in the three years was the least profit generated?
-select months, years, min(profit) as TP
+select months, sum(profit) as TP
 FROM INTERNATIONAL_BREWERIES
-GROUP BY MONTHS, YEARS
+GROUP BY MONTHS
 ORDER BY TP
 LIMIT 1;
 
@@ -58,14 +58,16 @@ GROUP BY MONTHS, YEARS;
 
 --Compare the profit in percentage for each of the month in 2019
 SELECT MONTHS, SUM(PROFIT) AS TP,SUM(PROFIT)* 100/
-(SELECT	SUM(PROFIT) AS TP FROM INTERNATIONAL_BREWERIES)AS PERC
+(SELECT SUM(PROFIT) AS YEARLY
+FROM INTERNATIONAL_BREWERIES
+WHERE YEARS = 2019)AS PERC
 FROM INTERNATIONAL_BREWERIES
 WHERE YEARS = 2019
 GROUP BY MONTHS
 ORDER BY PERC DESC;
 
 --- Which particular brand generated the highest profit in Senegal?
-SELECT BRANDS, COUNTRIES, MAX(PROFIT) AS TP
+SELECT BRANDS, COUNTRIES, SUM(PROFIT) AS TP
 FROM INTERNATIONAL_BREWERIES
 WHERE COUNTRIES = 'Senegal'
 GROUP BY BRANDS, COUNTRIES
@@ -76,7 +78,7 @@ LIMIT 1;
 /* Within the last two years, the brand manager wants to know the 
 top three brands consumed in the francophone countries?*/
 
-SELECT BRANDS,COUNT(quantity)AS DRINK
+SELECT BRANDS, SUM(quantity)AS DRINK
 FROM INTERNATIONAL_BREWERIES
 WHERE COUNTRIES IN ('Senegal', 'Togo', 'Benin') 
 	AND YEARS IN (2018,2019)
@@ -85,7 +87,7 @@ ORDER BY DRINK DESC
 LIMIT 3;
 
 ---Find out the top two choice of consumer brands in Ghana
-SELECT BRANDS,COUNT(quantity)AS DRINK
+SELECT BRANDS, SUM(quantity)AS DRINK
 FROM INTERNATIONAL_BREWERIES
 WHERE COUNTRIES = 'Ghana'
 GROUP BY BRANDS
@@ -101,16 +103,16 @@ AND BRANDS IN ('hero', 'castle lite', 'budweiser','trophy','eagle lager');
 
  
 --Favorites malt brand in Anglophone region between 2018 and 2019
-SELECT BRANDS,COUNT(quantity)AS DRINK
+SELECT BRANDS, SUM(quantity)AS DRINK
 FROM INTERNATIONAL_BREWERIES
-WHERE BRANDS IN ('beta malt', 'grand malt') 
+WHERE BRANDS Like '%malt%'
 	AND YEARS IN (2018,2019) AND COUNTRIES IN ('Nigeria','Ghana')
 GROUP BY BRANDS
 ORDER BY DRINK DESC
 LIMIT 1;
 
 -- Which brands sold the highest in 2019 in Nigeria?
-SELECT BRANDS,SUM(PROFIT)AS DRINK
+SELECT BRANDS,SUM(QUANTITY)AS DRINK
 FROM INTERNATIONAL_BREWERIES
 WHERE YEARS = 2019 AND COUNTRIES ='Nigeria'
 GROUP BY BRANDS
